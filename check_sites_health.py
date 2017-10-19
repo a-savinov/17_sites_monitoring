@@ -49,12 +49,12 @@ def output_check_results_to_console(domains_list):
             check_resume = 'OK'
         print(
             'Domain name: {:30} Response code: {} Expires date: {} '
-            'Tests resume: {}'.format(domain,
+            'Test results: {}'.format(domain,
                                       domain_status_check[0],
                                       domain_expiration_check[0],
                                       check_resume))
 
 
 if __name__ == '__main__':
-    domains_list = load_urls4check('domainslist.txt')
+    domains_list = load_urls4check('sites.txt')
     output_check_results_to_console(domains_list)
