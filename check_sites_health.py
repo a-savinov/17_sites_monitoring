@@ -14,7 +14,7 @@ def load_urls4check(path_to_file):
 def check_server_respond_with_200(url):
     ok_status_code = 200
     try:
-        response_code = requests.get(url).status_code
+        response_code = requests.get('http://{}'.format(url)).status_code
         check_status = bool(response_code == ok_status_code)
     except requests.ConnectionError:
         response_code = 'ERR'
@@ -41,19 +41,18 @@ def check_domain_expiration_date(domain_name, days_to_expire=30):
 def output_check_results_to_console(domains_list):
     for domain in domains_list:
         domain = domain.strip()
-        domain_status_check = check_server_respond_with_200(
-            'http://{}'.format(domain))
+        domain_status_check = check_server_respond_with_200(domain)
         domain_expiration_check = check_domain_expiration_date(domain)
         if not domain_expiration_check[1] or not domain_status_check[1]:
-            check_resume = 'ATTENTION !!!'
+            check_result = 'ATTENTION !!!'
         else:
-            check_resume = 'OK'
+            check_result = 'OK'
         print(
             'Domain name: {:30} Response code: {} Expires date: {} '
             'Test results: {}'.format(domain,
                                       domain_status_check[0],
                                       domain_expiration_check[0],
-                                      check_resume))
+                                      check_result))
 
 
 def get_input_argument_parser():
