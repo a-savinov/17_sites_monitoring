@@ -11,16 +11,17 @@ def load_urls4check(path_to_file):
 
 
 def check_server_respond_with_200(url):
+    ok_status_code = 200
     try:
         response_code = requests.get(url).status_code
-        check_status = bool(response_code == 200)
+        check_status = bool(response_code == ok_status_code)
     except requests.ConnectionError:
         response_code = 'ERR'
         check_status = False
     return response_code, check_status
 
 
-def check_domain_expiration_date(domain_name):
+def check_domain_expiration_date(domain_name, days_to_expire=30):
     whois_info = whois.whois(domain_name)
     if whois_info.expiration_date is None:
         expiration_date = None
@@ -28,18 +29,19 @@ def check_domain_expiration_date(domain_name):
     elif type(whois_info.expiration_date) is list:
         expiration_date = whois_info.expiration_date[0]
         time_delta_in_days = (expiration_date - dt.datetime.now()).days
-        check_status = bool(time_delta_in_days > 30)
+        check_status = bool(time_delta_in_days > days_to_expire)
     else:
         expiration_date = whois_info.expiration_date
         time_delta_in_days = (expiration_date - dt.datetime.now()).days
-        check_status = bool(time_delta_in_days > 30)
+        check_status = bool(time_delta_in_days > days_to_expire)
     return expiration_date, check_status
 
 
 def output_check_results_to_console(domains_list):
     for domain in domains_list:
         domain = domain.strip()
-        domain_status_check = check_server_respond_with_200('http://{}'.format(domain))
+        domain_status_check = check_server_respond_with_200(
+            'http://{}'.format(domain))
         domain_expiration_check = check_domain_expiration_date(domain)
         if not domain_expiration_check[1] or not domain_status_check[1]:
             check_resume = 'ATTENTION !!!'
@@ -47,9 +49,10 @@ def output_check_results_to_console(domains_list):
             check_resume = 'OK'
         print(
             'Domain name: {:30} Response code: {} Expires date: {} '
-            'Tests resume: {}'.format(
-                domain, domain_status_check[0], domain_expiration_check[
-                    0], check_resume))
+            'Tests resume: {}'.format(domain,
+                                      domain_status_check[0],
+                                      domain_expiration_check[0],
+                                      check_resume))
 
 
 if __name__ == '__main__':
