@@ -1,4 +1,5 @@
 import datetime as dt
+import argparse
 
 import requests
 import whois
@@ -55,6 +56,16 @@ def output_check_results_to_console(domains_list):
                                       check_resume))
 
 
+def get_input_argument_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--file', required=True,
+                        help='Path to file with sites list')
+    return parser
+
+
 if __name__ == '__main__':
-    domains_list = load_urls4check('sites.txt')
+    parser = get_input_argument_parser()
+    args = parser.parse_args()
+    path_to_file = args.file
+    domains_list = load_urls4check(path_to_file)
     output_check_results_to_console(domains_list)

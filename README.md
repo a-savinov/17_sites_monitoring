@@ -14,13 +14,18 @@ pip install -r requirements.txt # alternatively try pip3
 ### How to use
 ```bash
 
-$ python check_sites_health.py <file_with_sites_list>
+$ python check_sites_health.py -h
+usage: check_sites_health.py [-h] -f FILE
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILE, --file FILE  Path to file with sites list
 
 ```
 
 ### Sample output
 ```bash
-$ python python check_sites_health.py sites.txt
+$ python python check_sites_health.py -f sites.txt
 Domain name: google.com                     Response code: 200 Expires date: 2020-09-14 04:00:00 Test results: OK
 Domain name: youtube.com                    Response code: 200 Expires date: 2018-02-15 05:13:12 Test results: OK
 Domain name: facebook.com                   Response code: 200 Expires date: 2025-03-30 04:00:00 Test results: OK
