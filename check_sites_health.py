@@ -1,5 +1,5 @@
-import datetime as dt
 import argparse
+import datetime as dt
 
 import requests
 import whois
@@ -20,7 +20,7 @@ def check_server_respond_with_200(url):
         response_code = None
         result_check_server_respond = False
     return {'response_code': response_code,
-            'result_check_server_respond': result_check_server_respond}
+            'check_result_bool': result_check_server_respond}
 
 
 def check_domain_expiration_date(domain_name, days_to_expire=30):
@@ -37,7 +37,7 @@ def check_domain_expiration_date(domain_name, days_to_expire=30):
         time_delta_in_days = (expiration_date - dt.datetime.now()).days
         result_expiration_date_check = (time_delta_in_days > days_to_expire)
     return {'expiration_date': expiration_date,
-            'result_expiration_date_check': result_expiration_date_check}
+            'check_result_bool': result_expiration_date_check}
 
 
 def output_check_results_to_console(domains_list):
@@ -45,8 +45,8 @@ def output_check_results_to_console(domains_list):
         domain = domain.strip()
         domain_responce_check = check_server_respond_with_200(domain)
         domain_expiration_check = check_domain_expiration_date(domain)
-        if not domain_expiration_check['result_expiration_date_check'] \
-                or not domain_responce_check['result_check_server_respond']:
+        if not domain_expiration_check['check_result_bool'] \
+                or not domain_responce_check['check_result_bool']:
             all_checks_results = 'ATTENTION !!!'
         else:
             all_checks_results = 'OK'
