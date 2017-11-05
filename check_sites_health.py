@@ -15,44 +15,47 @@ def check_server_respond_with_200(url):
     ok_status_code = 200
     try:
         response_code = requests.get('http://{}'.format(url)).status_code
-        check_status = bool(response_code == ok_status_code)
+        result_check_server_respond = (response_code == ok_status_code)
     except requests.ConnectionError:
-        response_code = 'ERR'
-        check_status = False
-    return response_code, check_status
+        response_code = None
+        result_check_server_respond = False
+    return {'response_code': response_code,
+            'result_check_server_respond': result_check_server_respond}
 
 
 def check_domain_expiration_date(domain_name, days_to_expire=30):
     whois_info = whois.whois(domain_name)
     if whois_info.expiration_date is None:
         expiration_date = None
-        check_status = False
+        result_expiration_date_check = False
     elif type(whois_info.expiration_date) is list:
         expiration_date = whois_info.expiration_date[0]
         time_delta_in_days = (expiration_date - dt.datetime.now()).days
-        check_status = bool(time_delta_in_days > days_to_expire)
+        result_expiration_date_check = (time_delta_in_days > days_to_expire)
     else:
         expiration_date = whois_info.expiration_date
         time_delta_in_days = (expiration_date - dt.datetime.now()).days
-        check_status = bool(time_delta_in_days > days_to_expire)
-    return expiration_date, check_status
+        result_expiration_date_check = (time_delta_in_days > days_to_expire)
+    return {'expiration_date': expiration_date,
+            'result_expiration_date_check': result_expiration_date_check}
 
 
 def output_check_results_to_console(domains_list):
     for domain in domains_list:
         domain = domain.strip()
-        domain_status_check = check_server_respond_with_200(domain)
+        domain_responce_check = check_server_respond_with_200(domain)
         domain_expiration_check = check_domain_expiration_date(domain)
-        if not domain_expiration_check[1] or not domain_status_check[1]:
-            check_result = 'ATTENTION !!!'
+        if not domain_expiration_check['result_expiration_date_check'] \
+                or not domain_responce_check['result_check_server_respond']:
+            all_checks_results = 'ATTENTION !!!'
         else:
-            check_result = 'OK'
+            all_checks_results = 'OK'
         print(
             'Domain name: {:30} Response code: {} Expires date: {} '
-            'Test results: {}'.format(domain,
-                                      domain_status_check[0],
-                                      domain_expiration_check[0],
-                                      check_result))
+            'Results: {}'.format(domain,
+                                 domain_responce_check['response_code'],
+                                 domain_expiration_check['expiration_date'],
+                                 all_checks_results))
 
 
 def get_input_argument_parser():
